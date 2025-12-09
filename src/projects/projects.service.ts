@@ -3,7 +3,7 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Project } from './project.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { ProjectFiltersDto } from 'src/projects/dto/project-filters.dto';
 import parseSearch from 'src/utils/parseSearch';
 import { RequestFiltersDto } from 'src/requests/dto/request-filters.dto';
@@ -140,9 +140,8 @@ export class ProjectsService {
     try {
       const { search, ...filters } = queryFilters;
       const searchParams = parseSearch(search, ['title', 'code']);
-  
+      
       const query: any = {
-        users: userId,
         ...filters,
         ...searchParams,
       };
@@ -150,9 +149,9 @@ export class ProjectsService {
       const projects = await this.projectModel
         .find(query)
         .populate('requests')
-        .populate('users', 'name email');
-  
-      return projects;
+        .populate('users', 'name email id');
+      
+      return projects.filter(p => p.users.some(u => u.equals(userId)));
   
     } catch (error) {
       console.error('Erro ao buscar projetos do usuário:', error);

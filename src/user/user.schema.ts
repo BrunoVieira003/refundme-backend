@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Types } from 'mongoose';
 import { Role } from './enums/role.enum';
-import { IsEnum } from 'class-validator';
 
 @Schema()
 export class User{
